@@ -37,6 +37,46 @@
   const stopButton = document.querySelector('#stop');
 
   //Your code goes here
+	function populateVoices() {
+  voices = speechSynthesis.getVoices();
+  voicesDropdown.innerHTML = '';
+  voices.forEach(voice => {
+    const option = document.createElement('option');
+    option.value = voice.lang;
+    option.textContent = `${voice.name} (${voice.lang})`;
+    voicesDropdown.appendChild(option);
+  });
+}
+
+// Event listener to update voices when they are loaded
+speechSynthesis.addEventListener('voiceschanged', populateVoices);
+
+// Function to set the speech options and speak the entered text
+function speakText() {
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+
+  const selectedVoice = voicesDropdown.value;
+  const selectedRate = parseFloat(document.querySelector('[name="rate"]').value);
+  const selectedPitch = parseFloat(document.querySelector('[name="pitch"]').value);
+  const textToRead = document.querySelector('[name="text"]').value;
+
+  msg.text = textToRead;
+  msg.voice = voices.find(voice => voice.lang === selectedVoice);
+  msg.rate = selectedRate;
+  msg.pitch = selectedPitch;
+
+  speechSynthesis.speak(msg);
+}
+
+// Event listener for the "Speak" button
+speakButton.addEventListener('click', speakText);
+
+// Event listener for the "Stop" button
+stopButton.addEventListener('click', () => {
+  speechSynthesis.cancel();
+});
 </script>
 
 </body>
